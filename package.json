@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --mode development",
+    "start": "node server.js",
     "build": "webpack --mode development"
   },
   "repository": {
@@ -21,6 +21,7 @@
   "dependencies": {
     "axios": "^0.21.4",
     "babel-core": "^6.26.3",
+    "express": "^4.17.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-hot-loader": "^4.13.0"
