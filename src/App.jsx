@@ -5,8 +5,7 @@ const axios = require('axios');
 import Facilities from "./Facilities.jsx"
 
 axios.defaults.headers = {
-  'Content-Type': 'application/json',
-  'apikey': process.env.API_KEY
+  'Content-Type': 'application/json'
 }
 
 axios.defaults.baseURL = "https://ridb.recreation.gov/api/v1"
@@ -20,7 +19,7 @@ class App extends Component{
   }
 
   componentDidMount() {
-    axios.get("/facilities?limit=50&offset=0&state=CO")
+    axios.get("/facilities", {'params': {'limit': 50, 'offset': 0, 'state': 'CO', 'apikey': process.env.API_KEY}})
     .then((response) => {
       console.log(response)
       this.setState({
