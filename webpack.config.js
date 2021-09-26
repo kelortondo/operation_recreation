@@ -31,5 +31,5 @@ module.exports = {
     publicPath: "http://localhost:3000/dist/",
     hotOnly: true
   },
-  plugins: [new webpack.HotModuleReplacementPlugin(), new Dotenv()]
+  plugins: [new webpack.HotModuleReplacementPlugin(), new Dotenv({ systemvars: true })]
 };
