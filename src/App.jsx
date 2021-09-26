@@ -2,28 +2,23 @@ import React, { Component} from "react";
 import {hot} from "react-hot-loader";
 import "./App.css";
 const axios = require('axios');
-import Facilities from "./Facilities.jsx"
+import RecAreas from "./RecAreas.jsx"
 
-axios.defaults.headers = {
-  'Content-Type': 'application/json'
-}
 
-axios.defaults.baseURL = "https://ridb.recreation.gov/api/v1"
 
 class App extends Component{
   constructor(props) {
     super(props)
     this.state = {
-      facilities: []
+      recAreas: []
     }
   }
 
   componentDidMount() {
-    axios.get("/facilities", {'params': {'limit': 50, 'offset': 0, 'state': 'CO', 'apikey': process.env.API_KEY}})
+    axios.get("/recAreas", {'params': {'limit': 50, 'offset': 0, 'state': 'CO', 'sort': 'Name', 'full': true}})
     .then((response) => {
-      console.log(response)
       this.setState({
-        facilities: response['RECDATA']
+        recAreas: response['data']['RECDATA']
       })
     })
     .catch((err) => {
@@ -34,7 +29,7 @@ class App extends Component{
   render(){
     return(
       <div className="App">
-        <Facilities facilities={this.state.facilities}/>
+        <RecAreas recAreas={this.state.recAreas}/>
       </div>
     );
   }
