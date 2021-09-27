@@ -27,3 +27,56 @@ app.get('/recAreas', (req, res) => {
     res.send(err)
   })
 })
+
+app.get('/nationalParks', (req, res) => {
+  let offset = 0;
+  let parks = [];
+  let total_parks = null;
+  let requests = [];
+  const regex = /(National Park)/
+  let filtered_parks = []
+
+  params = {
+    'query': 'National Park',
+    'limit': 50,
+    'offset': offset,
+    'sort': 'Name',
+    'apikey': process.env.API_KEY
+  }
+
+  axios.get(baseURL + '/organizations/128/recareas', {'params': params})
+  .then((response) => {
+    total_parks = response['data']['METADATA']['RESULTS']['TOTAL_COUNT'];
+    parks = response['data']['RECDATA']
+
+    while (params['offset'] < total_parks) {
+      params['offset'] = params['offset'] + 50;
+      let request = axios.get(baseURL + '/organizations/128/recareas', {'params': params});
+      requests.push(request)
+    }
+
+    axios.all(requests)
+    .then(axios.spread((...responses) => {
+      responses.forEach((response) => {
+        parks = [...parks, ...response['data']['RECDATA']]
+      })
+
+      parks.forEach((park) => {
+        if (regex.test(park['RecAreaName'])) {
+          filtered_parks.push(park)
+        }
+      })
+      console.log(filtered_parks)
+      res.send(filtered_parks)
+    }))
+    .catch((err) => {
+      res.send(err)
+    })
+  })
+  .catch((err) => {
+    res.send(err)
+  })
+
+
+
+})

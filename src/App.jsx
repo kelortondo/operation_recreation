@@ -10,15 +10,26 @@ class App extends Component{
   constructor(props) {
     super(props)
     this.state = {
-      recAreas: []
+      recAreas: [],
+      nationalParks: []
     }
   }
 
   componentDidMount() {
-    axios.get("/recAreas", {'params': {'limit': 50, 'offset': 0, 'state': 'CO', 'sort': 'Name', 'full': true}})
+/*     axios.get("/recAreas", {'params': {'limit': 50, 'offset': 0, 'state': 'CO', 'sort': 'Name', 'full': true}})
     .then((response) => {
       this.setState({
         recAreas: response['data']['RECDATA']
+      })
+    })
+    .catch((err) => {
+      console.log(err)
+    }) */
+
+    axios.get('/nationalParks')
+    .then((response) => {
+      this.setState({
+        nationalParks: response['data']
       })
     })
     .catch((err) => {
@@ -29,7 +40,7 @@ class App extends Component{
   render(){
     return(
       <div className="App">
-        <RecAreas recAreas={this.state.recAreas}/>
+        <RecAreas recAreas={this.state.nationalParks}/>
       </div>
     );
   }
