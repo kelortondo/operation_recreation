@@ -17,7 +17,7 @@ class Campgrounds extends React.Component{
   }
 
   titleCase(str) {
-    return str.toLowerCase().split(' ').map(function(word) {
+    return str.trim().toLowerCase().split(' ').map(function(word) {
       return word.replace(word[0], word[0].toUpperCase());
     }).join(' ');
   }
@@ -25,7 +25,7 @@ class Campgrounds extends React.Component{
   render() {
     let reservable = [];
     let nonReservable = [];
-    console.log(this.props.campgrounds)
+
     this.props.campgrounds.forEach((campground) => {
       if (campground['Reservable']) {
         reservable.push(<li key={campground['FacilityID']} onClick={() => {this.handleCampgroundClick(campground)}}> {this.titleCase(campground['FacilityName'])} </li>)
@@ -34,8 +34,6 @@ class Campgrounds extends React.Component{
       }
     })
 
-    console.log(reservable)
-    console.log(nonReservable)
     return(
       <>
         <h2>Campgrounds</h2>
