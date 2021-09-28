@@ -1,0 +1,9 @@
+.App {
+  display: flex;
+  height: 100%;
+}
+
+.column {
+  width: 50%;
+  height: 100%;
+}

@@ -14,13 +14,13 @@ app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
 
-app.get('/recAreas', (req, res) => {
-  let params = req.query;
+app.get('/campgrounds', (req, res) => {
+  let params = {}
   params['apikey'] = process.env.API_KEY
 
-  axios.get(baseURL + '/recareas', {'params': params})
+  axios.get(baseURL + `/recareas/${req.query.RecAreaID}/facilities?query=Campground&limit=50&offset=0`, {'params': params})
   .then((response) => {
-    res.send(response['data'])
+    res.send(response['data']['RECDATA'])
   })
   .catch((err) => {
     console.log(err)
@@ -62,11 +62,10 @@ app.get('/nationalParks', (req, res) => {
       })
 
       parks.forEach((park) => {
-        if (regex.test(park['RecAreaName'])) {
+        if (regex.test(park['RecAreaName']) && park['OrgRecAreaID'] != "") {
           filtered_parks.push(park)
         }
       })
-      console.log(filtered_parks)
       res.send(filtered_parks)
     }))
     .catch((err) => {

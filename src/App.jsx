@@ -2,8 +2,8 @@ import React, { Component} from "react";
 import {hot} from "react-hot-loader";
 import "./App.css";
 const axios = require('axios');
-import RecAreas from "./RecAreas.jsx"
-
+import ParksList from "./ParksList.jsx";
+import Campgrounds from "./Campgrounds.jsx";
 
 
 class App extends Component{
@@ -11,21 +11,13 @@ class App extends Component{
     super(props)
     this.state = {
       recAreas: [],
-      nationalParks: []
+      nationalParks: [],
+      campgrounds: [],
+      selectedPark: {}
     }
   }
 
   componentDidMount() {
-/*     axios.get("/recAreas", {'params': {'limit': 50, 'offset': 0, 'state': 'CO', 'sort': 'Name', 'full': true}})
-    .then((response) => {
-      this.setState({
-        recAreas: response['data']['RECDATA']
-      })
-    })
-    .catch((err) => {
-      console.log(err)
-    }) */
-
     axios.get('/nationalParks')
     .then((response) => {
       this.setState({
@@ -37,10 +29,29 @@ class App extends Component{
     })
   }
 
+  getParkReservables(park) {
+    this.setState({
+      selectedPark: park
+    })
+    axios.get('/campgrounds', {'params': {'RecAreaID': park['RecAreaID']}})
+    .then((response) => {
+      this.setState({
+        campgrounds: response['data']
+      })
+    })
+  }
+
   render(){
     return(
       <div className="App">
-        <RecAreas recAreas={this.state.nationalParks}/>
+        <div className="column">
+          <h1>National Parks:</h1>
+          <ParksList recAreas={this.state.nationalParks} setSelectedPark={this.getParkReservables.bind(this)}/>
+        </div>
+        <div className="column">
+          <h1>Things you may want to reserve:</h1>
+          <Campgrounds campgrounds={this.state.campgrounds}/>
+        </div>
       </div>
     );
   }
