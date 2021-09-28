@@ -29,6 +29,14 @@ class Tickets extends React.Component{
           <ul>
             {this.props.tickets.map((facility) => <li key={facility['FacilityID']}>{this.titleCase(facility['FacilityName'])}</li>)}
           </ul>
+        <h2>Tours</h2>
+          <ul>
+            {this.props.tours.map((tour) => <li key={tour['TourID']}>{this.titleCase(tour['TourName'])}</li>)}
+          </ul>
+        <h2>Visitors Centers</h2>
+          <ul>
+          {this.props.visitorCenters.map((facility) => <li key={facility['FacilityID']}>{this.titleCase(facility['FacilityName'])}</li>)}
+          </ul>
       </>
     );
   }

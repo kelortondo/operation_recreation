@@ -22,20 +22,37 @@ app.get('/facilities', (req, res) => {
   .then((response) => {
     let facilitiesInfo = {
       campgrounds: [],
-      ticketFacilities: []
+      ticketFacilities: [],
+      visitorCenters: [],
+      tours: []
     }
+    let facilityRequests = [];
+
     response['data']['RECDATA'].forEach((facility) => {
-      if (facility['FacilityTypeDescription'] == "Ticket Facility") {
+      let tourRequest = axios.get(baseURL + `/facilities/${facility['FacilityID']}/tours?limit=50&offset=0`, {'params': params});
+      facilityRequests.push(tourRequest)
+
+      if (facility['FacilityTypeDescription'] == "Ticket Facility" ) {
         facilitiesInfo['ticketFacilities'].push(facility)
       } else if (facility['FacilityTypeDescription'] == "Campground") {
         facilitiesInfo['campgrounds'].push(facility)
+      } else if (facility['FacilityTypeDescription'] == "Visitor Center" || facility['FacilityTypeDescription'] == "Facility") {
+        facilitiesInfo['visitorCenters'].push(facility)
       }
     })
-    res.send(facilitiesInfo)
-  })
-  .catch((err) => {
-    console.log(err)
-    res.send(err)
+
+    axios.all(facilityRequests)
+    .then(axios.spread((...responses) => {
+      responses.forEach((response) => {
+        facilitiesInfo['tours'] = [...facilitiesInfo['tours'], ...response['data']['RECDATA']]
+      })
+    }))
+    .then(() => {
+      res.send(facilitiesInfo)
+    })
+    .catch((err) => {
+      res.send(err)
+    })
   })
 })
 

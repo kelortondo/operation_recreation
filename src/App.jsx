@@ -14,6 +14,8 @@ class App extends Component{
       ticketFacilities: [],
       nationalParks: [],
       campgrounds: [],
+      visitorCenters: [],
+      tours: [],
       selectedPark: {}
     }
   }
@@ -38,7 +40,9 @@ class App extends Component{
     .then((response) => {
       this.setState({
         campgrounds: response['data']['campgrounds'],
-        ticketFacilities: response['data']['ticketFacilities']
+        ticketFacilities: response['data']['ticketFacilities'],
+        visitorCenters: response['data']['visitorCenters'],
+        tours: response['data']['tours']
       })
     })
   }
@@ -53,7 +57,7 @@ class App extends Component{
         <div className="column">
           <h1>Things you may want to reserve:</h1>
           <Campgrounds campgrounds={this.state.campgrounds}/>
-          <Tickets tickets={this.state.ticketFacilities}/>
+          <Tickets tickets={this.state.ticketFacilities} visitorCenters={this.state.visitorCenters} tours={this.state.tours}/>
         </div>
       </div>
     );
