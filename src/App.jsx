@@ -32,17 +32,14 @@ class App extends Component{
     })
   }
 
-  getParkReservables(park) {
+  getParkCampgrounds(park) {
     this.setState({
       selectedPark: park
     })
-    axios.get('/facilities', {'params': {'RecAreaID': park['RecAreaID']}})
+    axios.get('/campgrounds', {'params': {'parkcode': park['OrgRecAreaID']}})
     .then((response) => {
       this.setState({
-        campgrounds: response['data']['campgrounds'],
-        ticketFacilities: response['data']['ticketFacilities'],
-        visitorCenters: response['data']['visitorCenters'],
-        tours: response['data']['tours']
+        campgrounds: response['data']['campgrounds']['data'],
       })
     })
   }
@@ -52,12 +49,11 @@ class App extends Component{
       <div className="App">
         <div className="column">
           <h1>National Parks:</h1>
-          <ParksList recAreas={this.state.nationalParks} setSelectedPark={this.getParkReservables.bind(this)}/>
+          <ParksList recAreas={this.state.nationalParks} setSelectedPark={this.getParkCampgrounds.bind(this)}/>
         </div>
         <div className="column">
           <h1>Things you may want to reserve:</h1>
           <Campgrounds campgrounds={this.state.campgrounds}/>
-          <Tickets tickets={this.state.ticketFacilities} visitorCenters={this.state.visitorCenters} tours={this.state.tours}/>
         </div>
       </div>
     );

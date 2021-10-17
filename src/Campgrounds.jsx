@@ -1,6 +1,7 @@
 import React from "react";
 
 import "./App.css";
+import CampgroundDetail from "./CampgroundDetail.jsx";
 
 class Campgrounds extends React.Component{
   constructor(props) {
@@ -10,9 +11,9 @@ class Campgrounds extends React.Component{
     }
   }
 
-  handleCampgroundClick(park) {
+  handleCampgroundClick(campground) {
     this.setState({
-      selectedCampground: park
+      selectedCampground: campground
     })
   }
 
@@ -27,10 +28,10 @@ class Campgrounds extends React.Component{
     let nonReservable = [];
 
     this.props.campgrounds.forEach((campground) => {
-      if (campground['Reservable']) {
-        reservable.push(<li key={campground['FacilityID']} onClick={() => {this.handleCampgroundClick(campground)}}> {this.titleCase(campground['FacilityName'])} </li>)
+      if (campground['reservationUrl'].length > 0) {
+        reservable.push(<li key={campground['id']} onClick={() => {this.handleCampgroundClick(campground)}}> {this.titleCase(campground['name'])} </li>)
       } else {
-        nonReservable.push(<li key={campground['FacilityID']} onClick={() => {this.handleCampgroundClick(campground)}}> {this.titleCase(campground['FacilityName'])} </li>)
+        nonReservable.push(<li key={campground['id']} onClick={() => {this.handleCampgroundClick(campground)}}> {this.titleCase(campground['name'])} </li>)
       }
     })
 
@@ -45,6 +46,13 @@ class Campgrounds extends React.Component{
           <ul>
             {nonReservable}
           </ul>
+        <div>
+          <h3>Campground Detail</h3>
+          {Object.keys(this.state.selectedCampground).length === 0 ?
+            <div>Select a campground to display detailed information.</div> :
+            <CampgroundDetail campground={this.state.selectedCampground} />
+          }
+        </div>
       </>
     );
   }

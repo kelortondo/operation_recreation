@@ -9,86 +9,69 @@ axios.defaults.headers = {
 }
 
 const baseURL = "https://ridb.recreation.gov/api/v1"
+const baseURLNPS = "https://developer.nps.gov/api/v1"
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
 
-app.get('/facilities', (req, res) => {
+app.get('/campgrounds', (req, res) => {
   let params = {}
-  params['apikey'] = process.env.API_KEY
-
-  axios.get(baseURL + `/recareas/${req.query.RecAreaID}/facilities?limit=50&offset=0`, {'params': params})
+  params['api_key'] = process.env.API_KEY_NPS
+  params['parkcode'] = req.query.parkcode
+  let facilitiesInfo = {
+    campgrounds: [],
+  }
+  axios.get(baseURLNPS + '/campgrounds', {'params': params})
   .then((response) => {
-    let facilitiesInfo = {
-      campgrounds: [],
-      ticketFacilities: [],
-      visitorCenters: [],
-      tours: []
-    }
-    let facilityRequests = [];
-
-    response['data']['RECDATA'].forEach((facility) => {
-      let tourRequest = axios.get(baseURL + `/facilities/${facility['FacilityID']}/tours?limit=50&offset=0`, {'params': params});
-      facilityRequests.push(tourRequest)
-
-      if (facility['FacilityTypeDescription'] == "Ticket Facility" ) {
-        facilitiesInfo['ticketFacilities'].push(facility)
-      } else if (facility['FacilityTypeDescription'] == "Campground") {
-        facilitiesInfo['campgrounds'].push(facility)
-      } else if (facility['FacilityTypeDescription'] == "Visitor Center" || facility['FacilityTypeDescription'] == "Facility") {
-        facilitiesInfo['visitorCenters'].push(facility)
-      }
-    })
-
-    axios.all(facilityRequests)
-    .then(axios.spread((...responses) => {
-      responses.forEach((response) => {
-        facilitiesInfo['tours'] = [...facilitiesInfo['tours'], ...response['data']['RECDATA']]
-      })
-    }))
-    .then(() => {
-      res.send(facilitiesInfo)
-    })
-    .catch((err) => {
-      res.send(err)
-    })
+    facilitiesInfo['campgrounds'] = response['data']
+  })
+  .then(() => {
+    res.send(facilitiesInfo)
+  })
+  .catch((err) => {
+    res.send(err)
   })
 })
 
 app.get('/nationalParks', (req, res) => {
-  let offset = 0;
-  let parks = [];
   let total_parks = null;
+  let parks = [];
   let requests = [];
-  const regex = /(National Park)/
   let filtered_parks = []
+  const regex = /(National Park)/
 
   params = {
     'query': 'National Park',
     'limit': 50,
-    'offset': offset,
+    'offset': 0,
     'sort': 'Name',
     'apikey': process.env.API_KEY
   }
 
+  // Retrieve a list of all the national parks
   axios.get(baseURL + '/organizations/128/recareas', {'params': params})
   .then((response) => {
+    // total_parks represents the total number that could be returned
     total_parks = response['data']['METADATA']['RESULTS']['TOTAL_COUNT'];
     parks = response['data']['RECDATA']
 
+    // The API from recreation.gov only allows 50 parks to be returned, so we will assemble
+    // an array of requests we can make to get all of the parks back
     while (params['offset'] < total_parks) {
       params['offset'] = params['offset'] + 50;
       let request = axios.get(baseURL + '/organizations/128/recareas', {'params': params});
       requests.push(request)
     }
 
+    // Send all of the necessary API requests to get back all of the parks, and assemble
+    // the responses into a single array
     axios.all(requests)
     .then(axios.spread((...responses) => {
       responses.forEach((response) => {
         parks = [...parks, ...response['data']['RECDATA']]
       })
-
+      // Filter out anything that is not a National Park
       parks.forEach((park) => {
         if (regex.test(park['RecAreaName']) && park['OrgRecAreaID'] != "") {
           filtered_parks.push(park)
@@ -103,7 +86,4 @@ app.get('/nationalParks', (req, res) => {
   .catch((err) => {
     res.send(err)
   })
-
-
-
 })
