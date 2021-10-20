@@ -36,10 +36,10 @@ class App extends Component{
     this.setState({
       selectedPark: park
     })
-    axios.get('/campgrounds', {'params': {'parkcode': park['OrgRecAreaID']}})
+    axios.get('/campgrounds', {'params': {'parkcode': park['OrgRecAreaID'], 'recAreaId': park['RecAreaID']}})
     .then((response) => {
       this.setState({
-        campgrounds: response['data']['campgrounds']['data'],
+        campgrounds: response['data']['campgrounds']['data']
       })
     })
   }
@@ -53,7 +53,7 @@ class App extends Component{
         </div>
         <div className="column">
           <h1>Things you may want to reserve:</h1>
-          <Campgrounds campgrounds={this.state.campgrounds}/>
+          <Campgrounds campgrounds={this.state.campgrounds} key={this.state.selectedPark.OrgRecAreaID}/>
         </div>
       </div>
     );

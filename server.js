@@ -24,10 +24,25 @@ app.get('/campgrounds', (req, res) => {
   }
   axios.get(baseURLNPS + '/campgrounds', {'params': params})
   .then((response) => {
-    facilitiesInfo['campgrounds'] = response['data']
-  })
-  .then(() => {
-    res.send(facilitiesInfo)
+    facilitiesInfo['campgrounds'] = response['data'];
+    axios.get(baseURL + '/recareas/' + req.query.recAreaId + '/facilities?limit=50&offset=0', {'params': {'apikey': process.env.API_KEY}})
+    .then((response) => {
+      let data = response['data']['RECDATA']
+      facilitiesInfo['campgrounds']['data'].forEach((campground) => {
+        const campgroundName = campground.name.toLowerCase();
+        for (let i = 0; i < data.length; i++) {
+          let facility = data[i];
+          if (campgroundName === facility['FacilityName'].toLowerCase()) {
+            campground['ridbInfo'] = facility;
+            break;
+          }
+        }
+      })
+      res.send(facilitiesInfo)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
   })
   .catch((err) => {
     res.send(err)
